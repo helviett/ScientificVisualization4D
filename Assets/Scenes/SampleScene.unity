@@ -323,6 +323,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a17b9712c5994048b5e3d67d51c3ce1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  vertexMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+  edgeMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 52fbc2f1e82e6584fa99601b4078ca40, type: 2}
   lw: 2
   dx: 0
   dy: 0
