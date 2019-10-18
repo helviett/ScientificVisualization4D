@@ -12,7 +12,7 @@ public class Tesseract : MonoBehaviour
 	private float x, y, z, w;
 	public float lw = 2f;
 	public float dx, dy, dz, dw;
-
+    private float scaleFactor = 0.1f;
     void Start()
     {
 		verticies = new List<Vector4> {
@@ -34,7 +34,7 @@ public class Tesseract : MonoBehaviour
 			new Vector4(-1, 1, 1, -1),
 		};
 		original = new List<Vector4>(verticies);
-        var scaleFactor = 0.35f;
+     
 		var scale = new Matrix4x4(
 			new Vector4(scaleFactor, 0f, 0f, 0f), 
 			new Vector4(0f, scaleFactor, 0f, 0f),
@@ -129,7 +129,7 @@ public class Tesseract : MonoBehaviour
         var k = (end - start).magnitude;
         var size = edgeMesh.bounds.size.y;
         var angle = Quaternion.FromToRotation(Vector3.up, (end - start));
-        Graphics.DrawMesh(edge, Matrix4x4.TRS((start + end) / 2f, angle, new Vector3(1, k / size / 0.35f, 1)), material, 31); //(start + end) / 2f, angle, material, 31);
+        Graphics.DrawMesh(edge, Matrix4x4.TRS((start + end) / 2f, angle, new Vector3(1, k / size / scaleFactor, 1)), material, 31); //(start + end) / 2f, angle, material, 31);
     }
 
     Matrix4x4 RotateZ(float phi) => new Matrix4x4 {
