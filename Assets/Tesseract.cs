@@ -7,6 +7,7 @@ public class Tesseract : MonoBehaviour
 	public Mesh vertexMesh;
 	public Mesh edgeMesh;
 	public Material material;
+    public Material faceMaterial;
 	private List<Vector4> original { get; set; }
 	private List<Vector4> verticies { get; set; }
 	private float x, y, z, w;
@@ -85,29 +86,74 @@ public class Tesseract : MonoBehaviour
             var projected = transform.TransformVector(Muiltiply(projection, vertex));
             pvs.Add(projected);
             Graphics.DrawMesh(vertexMesh, projected, Quaternion.identity, material, 31);
-            // pvs.Add(projected);
-            // Gizmos.DrawSphere(projected, 0.1f);
         }
-        var j = 0;
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             DrawEdge(pvs[i], pvs[(i + 1) % 4]);
             DrawEdge(pvs[i + 4], pvs[(i + 1) % 4 + 4]);
             DrawEdge(pvs[i], pvs[i + 4]);
         }
 
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             DrawEdge(pvs[i + 8], pvs[(i + 1) % 4 + 8]);
             DrawEdge(pvs[i + 4 + 8], pvs[(i + 1) % 4 + 4 + 8]);
             DrawEdge(pvs[i + 8], pvs[i + 8 + 4]);
         }
 
-        for (int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             DrawEdge(pvs[i], pvs[i + 8]);
         }
 
+		for (int i = 0; i < 4; i++)
+		{
+			var j = i * 4;
+			DrawFace(pvs[j], pvs[j + 1], pvs[j + 2], pvs[j + 3]);
+		}
+		for (int i = 0; i < 6; i++)
+		{
+			if (i == 2)
+			{
+				i += 2;
+			}
+			var j = i * 2;
+			DrawFace(pvs[j], pvs[j + 1], pvs[j + 5], pvs[j + 4]);
+		}
+		DrawFace(pvs[1], pvs[2], pvs[6], pvs[5]);
+		DrawFace(pvs[0], pvs[3], pvs[7], pvs[4]);
+		DrawFace(pvs[8], pvs[11], pvs[15], pvs[12]);
+		DrawFace(pvs[9], pvs[10], pvs[14], pvs[13]);
+
+		// Inner
+
+		DrawFace(pvs[0], pvs[8], pvs[9], pvs[1]);
+		DrawFace(pvs[3], pvs[11], pvs[10], pvs[2]);
+		DrawFace(pvs[4], pvs[12], pvs[13], pvs[5]);
+		DrawFace(pvs[7], pvs[15], pvs[14], pvs[6]);
+
+		DrawFace(pvs[0], pvs[4], pvs[12], pvs[8]);
+		DrawFace(pvs[3], pvs[7], pvs[15], pvs[11]);
+		DrawFace(pvs[2], pvs[6], pvs[14], pvs[10]);
+		DrawFace(pvs[1], pvs[5], pvs[13], pvs[9]);
+
+		DrawFace(pvs[0], pvs[3], pvs[11], pvs[8]);
+		DrawFace(pvs[1], pvs[2], pvs[10], pvs[9]);
+		DrawFace(pvs[5], pvs[6], pvs[14], pvs[13]);
+		DrawFace(pvs[4], pvs[7], pvs[15], pvs[12]);
+	}
+
+    void DrawFace(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
+    {
+        var face = new Mesh();
+        var vertices = new Vector3[] { p0, p1, p2, p3 };
+        var indecies = new int[] {
+            0, 2, 1,
+            0, 3, 2,
+            0, 1, 2,
+            0, 2, 3,
+        };
+        face.vertices = vertices;
+        face.triangles = indecies;
+        // face.RecalculateNormals();
+        Graphics.DrawMesh(face, Matrix4x4.identity, faceMaterial, 31);
     }
 
     void DrawEdge(Vector3 start, Vector3 end, float lineWidth = 2000f)
@@ -123,9 +169,6 @@ public class Tesseract : MonoBehaviour
         edge.uv = uv;
         edge.triangles = triangles;
         edge.normals = edgeMesh.normals;
-        //var dir = end - start;
-        //Vector3 normal = Vector3.Cross(end, start);
-        //Vector3 side = Vector3.Cross(normal, end - start);
         var k = (end - start).magnitude;
         var size = edgeMesh.bounds.size.y;
         var angle = Quaternion.FromToRotation(Vector3.up, (end - start));
@@ -159,46 +202,6 @@ public class Tesseract : MonoBehaviour
         m20 = 0, m21 = 0, m22 = Mathf.Cos(phi), m23 = -Mathf.Sin(phi),
         m30 = 0, m31 = 0, m32 = Mathf.Sin(phi), m33 = Mathf.Cos(phi),
     };
-
-    // void OnDrawGizmos()
-	// {
-	// 	if ((verticies?.Count ?? 0) == 0) {
-	// 		return;
-	// 	}
-	// 	Gizmos.color = Color.cyan;
-	// 	var pvs = new List<Vector3>();
-	// 	Transform transform = gameObject.GetComponent<Transform>();
-	// 	Gizmos.matrix = transform.localToWorldMatrix;
-	// 	if (verticies == null) {
-	// 		return;
-	// 	}
-	// 	foreach (var vertex in verticies) {
-	// 		var c = 1 / (lw - vertex.w);
-	// 		var projection = new float[][] {
-	// 			new []{c, 0, 0, 0},
-	// 			new []{0, c, 0, 0},
-	// 			new []{0, 0, c, 0},
-	// 		};
-	// 		var projected = Muiltiply(projection, vertex);
-	// 		pvs.Add(projected);
-	// 		Gizmos.DrawSphere(projected, 0.1f);
-	// 	}
-	// 	for (int i = 0; i < 4; i++) {
-	// 		Gizmos.DrawLine(pvs[i], pvs[(i + 1) % 4]);
-	// 		Gizmos.DrawLine(pvs[i + 4], pvs[(i + 1) % 4 + 4]);
-	// 		Gizmos.DrawLine(pvs[i], pvs[i +  4]);
-	// 	}
-		
-	// 	for (int i = 0; i < 4; i++) {
-	// 		Gizmos.DrawLine(pvs[i + 8], pvs[(i + 1) % 4 + 8]);
-	// 		Gizmos.DrawLine(pvs[i + 4 + 8], pvs[(i + 1) % 4 + 4 + 8]);
-	// 		Gizmos.DrawLine(pvs[i + 8], pvs[i + 8 + 4]);
-	// 	}
-
-	// 	for (int i = 0; i < 8; i++) {
-	// 		Gizmos.DrawLine(pvs[i], pvs[i + 8]);
-	// 	}
-	// }
 
 	Vector3 Muiltiply(float[][] m, Vector4 vector) 
 	{

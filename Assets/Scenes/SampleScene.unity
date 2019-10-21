@@ -869,6 +869,7 @@ MonoBehaviour:
   vertexMesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   edgeMesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
   material: {fileID: 2100000, guid: 52fbc2f1e82e6584fa99601b4078ca40, type: 2}
+  faceMaterial: {fileID: 2100000, guid: 52fbc2f1e82e6584fa99601b4078ca40, type: 2}
   lw: 2
   dx: 0
   dy: 0
