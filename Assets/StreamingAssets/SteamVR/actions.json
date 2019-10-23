@@ -81,6 +81,14 @@
       "name": "/actions/mixedreality/in/ExternalCamera",
       "type": "pose",
       "requirement": "optional"
+    },
+    {
+      "name": "/actions/VRMath/in/Transform4DInc",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/VRMath/in/Transform4DDec",
+      "type": "boolean"
     }
   ],
   "action_sets": [
@@ -98,6 +106,10 @@
     },
     {
       "name": "/actions/mixedreality",
+      "usage": "single"
+    },
+    {
+      "name": "/actions/VRMath",
       "usage": "single"
     }
   ],

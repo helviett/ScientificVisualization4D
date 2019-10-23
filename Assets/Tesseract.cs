@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
 
 public class Tesseract : MonoBehaviour
 {
@@ -14,9 +15,42 @@ public class Tesseract : MonoBehaviour
 	public float lw = 2f;
 	public float dx, dy, dz, dw;
     private float scaleFactor = 0.1f;
+
+    public SteamVR_Action_Boolean ButtonX;
+    public SteamVR_Action_Boolean ButtonY;
+
+    public SteamVR_Input_Sources handType;
+
+    public void BtnXUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        Debug.Log("Button X is up");
+        dw = 0.0f;
+    }
+    public void BtnXDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        Debug.Log("Button X is down");
+        dw = -0.005f;
+    }
+
+    public void BtnYUp(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        Debug.Log("Button Y is up");
+        dw = 0.0f;
+    }
+    public void BtnYDown(SteamVR_Action_Boolean fromAction, SteamVR_Input_Sources fromSource)
+    {
+        Debug.Log("Button Y is down");
+        dw = 0.005f;
+    }
+
     void Start()
     {
-		verticies = new List<Vector4> {
+        ButtonX.AddOnStateDownListener(BtnXDown, handType);
+        ButtonX.AddOnStateUpListener(BtnXUp, handType);
+        ButtonY.AddOnStateDownListener(BtnYDown, handType);
+        ButtonY.AddOnStateUpListener(BtnYUp, handType);
+
+        verticies = new List<Vector4> {
 			new Vector4(-1, -1, -1, 1),
 			new Vector4(1, -1, -1, 1),
 			new Vector4(1, 1, -1, 1),
@@ -57,6 +91,11 @@ public class Tesseract : MonoBehaviour
             newVertices[i] = scale * vertices[i];
         }
         edgeMesh.vertices = newVertices;
+    }
+
+    void UpdateSpeedAround(int axis)
+    {
+
     }
 
     // Update is called once per frame

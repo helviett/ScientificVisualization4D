@@ -618,7 +618,7 @@ Transform:
   - {fileID: 44162230}
   - {fileID: 747828499}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &747828498
 GameObject:
@@ -847,6 +847,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1693105259}
   - component: {fileID: 1693105258}
+  - component: {fileID: 1693105260}
   m_Layer: 0
   m_Name: Tesseract
   m_TagString: Untagged
@@ -874,7 +875,14 @@ MonoBehaviour:
   dx: 0
   dy: 0
   dz: 0
-  dw: 0.01
+  dw: 0
+  ButtonX:
+    actionPath: /actions/VRMath/in/Transform4DDec
+    needsReinit: 0
+  ButtonY:
+    actionPath: /actions/VRMath/in/Transform4DInc
+    needsReinit: 0
+  handType: 1
 --- !u!4 &1693105259
 Transform:
   m_ObjectHideFlags: 0
@@ -887,8 +895,26 @@ Transform:
   m_LocalScale: {x: 5, y: 5, z: 5}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1693105260
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1693105257}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27991c206a5e66147bb8ee3ef31c8bac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  actionSet:
+    actionSetPath: /actions/VRMath
+  forSources: 0
+  disableAllOtherActionSets: 0
+  activateOnStart: 1
+  deactivateOnDestroy: 1
 --- !u!1 &1794918250
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,7 +1042,7 @@ Transform:
   - {fileID: 720330321}
   - {fileID: 20582819}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1893138394
 PrefabInstance:
