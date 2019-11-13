@@ -14,6 +14,10 @@ public class Tesseract : MonoBehaviour
 	private float x, y, z, w;
 	public float lw = 2f;
 	public float dx, dy, dz, dw;
+    private List<Mesh> edges;
+    private List<Mesh> faces;
+    private int currentFaceIdx;
+
     private float scaleFactor = 0.1f;
 
     public SteamVR_Action_Boolean ButtonX;
@@ -50,7 +54,9 @@ public class Tesseract : MonoBehaviour
         ButtonY.AddOnStateDownListener(BtnYDown, handType);
         ButtonY.AddOnStateUpListener(BtnYUp, handType);
 
-        verticies = new List<Vector4> {
+        edges = new List<Mesh>();
+        faces = new List<Mesh>();
+		verticies = new List<Vector4> {
 			new Vector4(-1, -1, -1, 1),
 			new Vector4(1, -1, -1, 1),
 			new Vector4(1, 1, -1, 1),
@@ -69,7 +75,7 @@ public class Tesseract : MonoBehaviour
 			new Vector4(-1, 1, 1, -1),
 		};
 		original = new List<Vector4>(verticies);
-     
+
 		var scale = new Matrix4x4(
 			new Vector4(scaleFactor, 0f, 0f, 0f), 
 			new Vector4(0f, scaleFactor, 0f, 0f),
@@ -91,11 +97,6 @@ public class Tesseract : MonoBehaviour
             newVertices[i] = scale * vertices[i];
         }
         edgeMesh.vertices = newVertices;
-    }
-
-    void UpdateSpeedAround(int axis)
-    {
-
     }
 
     // Update is called once per frame
@@ -126,22 +127,25 @@ public class Tesseract : MonoBehaviour
             pvs.Add(projected);
             Graphics.DrawMesh(vertexMesh, projected, Quaternion.identity, material, 31);
         }
-        for (int i = 0; i < 4; i++) {
-            DrawEdge(pvs[i], pvs[(i + 1) % 4]);
-            DrawEdge(pvs[i + 4], pvs[(i + 1) % 4 + 4]);
-            DrawEdge(pvs[i], pvs[i + 4]);
+
+        int edgeDrawIdx = -1;
+
+        for (int i = 0; i < 4; i++)
+        {
+            for (int j = 0; j <= 8; j+=8)
+            {
+                DrawEdge(pvs[i + j], pvs[(i + 1) % 4 + j], ++edgeDrawIdx);
+                DrawEdge(pvs[i + 4 + j], pvs[(i + 1) % 4 + 4 + j], ++edgeDrawIdx);
+                DrawEdge(pvs[i + j], pvs[i + 4 + j], ++edgeDrawIdx);
+            }
         }
 
-        for (int i = 0; i < 4; i++) {
-            DrawEdge(pvs[i + 8], pvs[(i + 1) % 4 + 8]);
-            DrawEdge(pvs[i + 4 + 8], pvs[(i + 1) % 4 + 4 + 8]);
-            DrawEdge(pvs[i + 8], pvs[i + 8 + 4]);
+        for (int i = 0; i < 8; i++)
+        {
+            DrawEdge(pvs[i], pvs[i + 8], ++edgeDrawIdx);
         }
 
-        for (int i = 0; i < 8; i++) {
-            DrawEdge(pvs[i], pvs[i + 8]);
-        }
-
+        currentFaceIdx = -1;
 		for (int i = 0; i < 4; i++)
 		{
 			var j = i * 4;
@@ -156,6 +160,7 @@ public class Tesseract : MonoBehaviour
 			var j = i * 2;
 			DrawFace(pvs[j], pvs[j + 1], pvs[j + 5], pvs[j + 4]);
 		}
+
 		DrawFace(pvs[1], pvs[2], pvs[6], pvs[5]);
 		DrawFace(pvs[0], pvs[3], pvs[7], pvs[4]);
 		DrawFace(pvs[8], pvs[11], pvs[15], pvs[12]);
@@ -181,7 +186,12 @@ public class Tesseract : MonoBehaviour
 
     void DrawFace(Vector3 p0, Vector3 p1, Vector3 p2, Vector3 p3)
     {
-        var face = new Mesh();
+        if (++currentFaceIdx < faces.Count)
+            faces[currentFaceIdx].Clear();
+        else
+            faces.Add(new Mesh());
+
+        var face = faces[currentFaceIdx];
         var vertices = new Vector3[] { p0, p1, p2, p3 };
         var indecies = new int[] {
             0, 2, 1,
@@ -195,9 +205,15 @@ public class Tesseract : MonoBehaviour
         Graphics.DrawMesh(face, Matrix4x4.identity, faceMaterial, 31);
     }
 
-    void DrawEdge(Vector3 start, Vector3 end, float lineWidth = 2000f)
-    {
-        var edge = new Mesh();
+    void DrawEdge(Vector3 start, Vector3 end, int edgeIdx, float lineWidth = 2000f)
+     {
+        if (edgeIdx < edges.Count)
+            edges[edgeIdx].Clear();
+        else
+            edges.Add(new Mesh());
+
+        var edge = edges[edgeIdx];
+
         var vertices = new Vector3[edgeMesh.vertices.Length];
         var uv = new Vector2[edgeMesh.uv.Length];
         var triangles = new int[edgeMesh.triangles.Length];
